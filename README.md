@@ -3,7 +3,7 @@
 </div>
 
 <div align="center"> 
-  <img src="readme_img/ingenieria-datos-SSIS.png" width="">
+  <img src="readme_img/ssis-ingenieria_de_datos.png" width="">
 </div>
 
 # Introducción al documento
