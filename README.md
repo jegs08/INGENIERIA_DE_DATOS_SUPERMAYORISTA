@@ -40,6 +40,28 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 - [Diseño físico](#Diseño-físico)
   - [Tablas del modelo dimensional](#Tablas-del-modelo-dimensional)
 
+# ETL "Supermayorista"
+
+<div align="center"> 
+  <img src="readme_img/SSIS_0.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_documento.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_vendedor.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_venta.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_banco.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_periodo.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_categoria.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_subcategoria.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_producto.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_departamento.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_distrito.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_cliente.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_correccion.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_fact_1.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_fact_2.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_fact_3.png" width="800px" height="500px">
+  <img src="readme_img/SSIS_fact_4.png" width="800px" height="500px">
+</div>
+
 
 ## Planificación del proyecto
 
