@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.2092
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{159641D6-6404-4A2A-AE62-294DE0FE8301}") = "DM_SPUERMAYORISTA", "DM_SPUERMAYORISTA\DM_SPUERMAYORISTA.dtproj", "{6D214504-07C5-40A6-8857-1F33AED80766}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|Default = Development|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6D214504-07C5-40A6-8857-1F33AED80766}.Development|Default.ActiveCfg = Development
+		{6D214504-07C5-40A6-8857-1F33AED80766}.Development|Default.Build.0 = Development
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5BCB7EEA-7D9A-432A-9CDD-2E6362122EE7}
+	EndGlobalSection
+EndGlobal
