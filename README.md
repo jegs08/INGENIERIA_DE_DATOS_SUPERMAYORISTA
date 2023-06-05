@@ -40,7 +40,7 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 - [Diseño físico](#Diseño-físico)
   - [Tablas del modelo dimensional](#Tablas-del-modelo-dimensional)
 
-# ETL "Supermayorista"
+# ETL "Supermayorista" (Archivo .sln)
 
 <div align="center"> 
   <img src="readme_img/SSIS_0.png" width="800px" height="500px">
