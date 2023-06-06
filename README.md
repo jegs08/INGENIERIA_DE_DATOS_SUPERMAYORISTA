@@ -523,7 +523,9 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
   ### FLUJO_TRANSACCIONES_TXT_VENTAS_&_PERIODO
   
    #### SOURCE_TRANSACCIONES_TXT
-    
+   
+   > *OJO: Para poder usar los archivos txt, dbe ubicar la carpeta __Folder_Archivos_TXT__ en un directorio de su preferencia para poder tener accesos a ellos.*
+   
    <div align="center"> 
      <img src="readme_img/SSIS_TXT_0.png" width="800px" height="500px">
      <img src="readme_img/SSIS_TXT_1.png" width="800px" height="500px">
