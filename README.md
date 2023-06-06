@@ -44,6 +44,16 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 
 <div align="center"> 
   <img src="readme_img/SSIS_0.png" width="800px" height="500px">
+  
+  ## FLUJO_DIM_DOCUMENTO
+  
+  ### SOURCE_DOCUMENTO
+  
+  ```python
+  SELECT cod_tipo_documento,nombre_tipo_documento,SUBSTRING(nombre_tipo_documento,CHARINDEX(' ',nombre_tipo_documento)+1,1) AS INDICADOR
+  FROM TIPO_DOCUMENTO
+  ```
+
   <img src="readme_img/SSIS_documento.png" width="800px" height="500px">
   <img src="readme_img/SSIS_vendedor.png" width="800px" height="500px">
   <img src="readme_img/SSIS_venta.png" width="800px" height="500px">
