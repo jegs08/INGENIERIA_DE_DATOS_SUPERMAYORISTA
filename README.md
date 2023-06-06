@@ -21,6 +21,21 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 ## Tabla de contenido
 - [ETL "Supermayorista"](#ETL-Supermayorista)
   - [FLUJO_DIM_DOCUMENTO](#FLUJO_DIM_DOCUMENTO)
+  - [FLUJO_DIM_VENDEDOR](#FLUJO_DIM_VENDEDOR)
+  - [FLUJO_DIM_VENTA](#FLUJO_DIM_VENTA)
+  - [FLUJO_DIM_BANCO](#FLUJO_DIM_BANCO)
+  - [FLUJO_DIM_PERIODO](#FLUJO_DIM_PERIODO)
+  - [FLUJO_DIM_CATEGORIA](#FLUJO_DIM_CATEGORIA)
+  - [FLUJO_DIM_SUBCATEGORIA](#FLUJO_DIM_SUBCATEGORIA)
+  - [FLUJO_DIM_PRODUCTO](#FLUJO_DIM_PRODUCTO)
+  - [FLUJO_DIM_DEPARTAMENTO](#FLUJO_DIM_DEPARTAMENTO)
+  - [FLUJO_DIM_DISTRITO](#FLUJO_DIM_DISTRITO)
+  - [FLUJO_DIM_CLIENTE](#FLUJO_DIM_CLIENTE)
+  - [CORRECCION_ORTOGRAFICA](#CORRECCION_ORTOGRAFICA)
+  - [FLUJO_FACT_SUPERMAYORISTA](#FLUJO_FACT_SUPERMAYORISTA)
+  - [BUCLE_TXT_VENTA](#BUCLE_TXT_VENTA)
+    - [FLUJO_TRANSACCIONES_TXT_VENTAS_&_PERIODO](#FLUJO_TRANSACCIONES_TXT_VENTAS_&_PERIODO)
+    - [FLUJO_TRANSACCIONES_TXT_FACT](#FLUJO_TRANSACCIONES_TXT_FACT)
 - [Planificación del proyecto](#Planificación-del-proyecto)
   - [Alcance del negocio](#Alcance-del-negocio)
 - [Definición de requerimientos para la empresa SUPERMAYORISTA](#Definición-de-requerimientos-para-la-empresa-SUPERMAYORISTA)
@@ -420,6 +435,8 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 </div>
 
 ## CORRECCION_ORTOGRAFICA
+
+> *OJO: Este proceso se hace antes de la carga dentro de FACT_SUPERMAYORISTA para que no haya pérdida de datos.*
 
   ```sql
   UPDATE VENTA_PRUEBA
