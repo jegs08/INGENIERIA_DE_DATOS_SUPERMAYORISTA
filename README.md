@@ -501,8 +501,10 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
      <img src="readme_img/SSIS_TXT_0.png" width="800px" height="500px">
      <img src="readme_img/SSIS_TXT_1.png" width="800px" height="500px">
    </div>
+   
+   >*OJO: El MULTICAST_DIM_VENTA_&_DIM_PERIODO se usó para partir los procesos que se le va a dar a la data, la 1° parte viene a estar dada por la parte de la izquierdo y la 2° parte por el lado derecho*
   
-   #### DATA_CONVERSION_METADATA (PRECIO_UNIT_ANTIDAD_NUMERO_PRODUCTO_NUMERO_VENDEDOR)
+   #### DATA_CONVERSION_METADATA (PRECIO_UNIT_ANTIDAD_NUMERO_PRODUCTO_NUMERO_VENDEDOR) [1° Parte]
    
    > Se hace la conversión de datos dentro de la caja Conversión de Datos
    
@@ -513,19 +515,271 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
    | NUMERO_PRODUCTO         | Copia de NUERMO_PRODUCTO | numérico[DT_NUMERIC] | 18        |
    | NUMERO_VENDEDOR         | Copia de NUMERO_VENDEDOR | numérico[DT_NUMERIC] | 18        |
 
+   #### ADD_COLUMN_CODIGO_VENTA
    
+   ```sql
+   # Se crea la columna derivada
+   COPIA_NUMERO_VENTA = TIPO_DOCUMENTO + SUBSTRING(NUMERO_VENTA,FINDSTRING(NUMERO_VENTA,"0",1) + 1,10)
+   ```
+   
+   #### SINGLE_ROW_CODIGO_VENTA
+   
+   ```sql
+   # Se eliminan las columnas innecesarias, quedando solo la columna:
+   COPIA_NUMERO_VENTA
+   ```
+   
+   #### DISTINCT_CODIGO_VENTA
+   
+   ```sql
+   # Se eliminan duplicados para la columna:
+   COPIA_NUMERO_VENTA
+   ```
+   
+   #### ADD_COLUMN_ESTADO
+   
+   ```sql
+   # Se crea la columna derivada
+   ESTADO = "VENDIDO"
+   ```
+   
+   #### DATA_ONVERSION_METADATA (CODIGO_VENTA_ESTADO)
+   
+   > Se hace la conversión de datos dentro de la caja Conversión de Datos
+   
+   |   Columna de entrada    |         Alias de salida         |     Tipo de datos    | Longitud  |
+   |:-----------------------:|:-------------------------------:|:--------------------:|:---------:|
+   | COPIA_NUMERO_VENTA      | Copia de COPIA_NUMERO_VENTA     | cadena[DT_STR]       | 13        |
+   | ESTADO                  | Copia de ESTADO                 | cadena[DT_STR]       | 7         |
 
+   #### MERGE_LEFT_JOIN_TO_DIM_VENTA
+   
+   ```sql
+  --Combinación externa completa
+  --**Se relacionan por Copia de COPIA_NUMERO_VENTA = COD_VENTA**
+  --Se traen las siguientes columnas::
+    Copia de COPIA_NUMERO_VENTA (Columna del origen)
+    Copia de ESTADO (Columna del origen)
+    COD_VENTA (Columna del destino)
+   ```
+  
+  #### SPLIT_COD_VENTA_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(COD_VENTA)
+  ```
+  
+  #### SINGLE_ROW_FECHA_VENTA [2° Parte]
+  
+  ```sql
+   # Se eliminan las columnas innecesarias, quedando solo la columna:
+   FECHA_VENTA
+   ```
+   
+  #### DISTINCT_FECHA_VENTA
+  
+  ```sql
+   # Se eliminan duplicados para la columna:
+   FECHA_VENTA
+   ```
+   
+  #### ADD_COLUMNS (CODIGO_FECHA_OFICIAL_ANIO_OFICIAL_MES_OFICIAL_DIA_OFICIAL)
+  
+  ```sql
+   # Se crean las columnas derivadas
+   CODIGO_FECHA_OFICIAL = (DT_DBDATE)(SUBSTRING(FECHA_VENTA,1,4) + "/" + SUBSTRING(FECHA_VENTA,5,2) + "/" + SUBSTRING(FECHA_VENTA,7,2))
+   ANIO_OFICIAL = SUBSTRING(FECHA_VENTA,1,4)
+   MES_OFICIAL = SUBSTRING(FECHA_VENTA,5,2)
+   DIA_OFICIAL = SUBSTRING(FECHA_VENTA,7,2)
+  ```
+  
+  #### MERGE_LEFT_JOIN_TO_DIM_PERIODO
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por Copia de FECHA_VENTA = COD_PERIODO**
+  --Se traen las siguientes columnas::
+    FECHA_VENTA (Columna del origen)
+    CODIGO_FECHA_OFICIAL
+    ANIO_OFICIAL
+    MES_OFICIAL
+    DIA_OFICIAL
+    COD_PERIODO (Columna del destino)
+   ```
+  #### SPLIT_COD_PERIODO_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(COD_PERIODO)
+  ```
+  
+  > *Esta imagen es el resultado de aplicar las 1° y 2° parte de los procedimientos para el tratamiento de los archivos txt y su respectiva inserción dentro del del FACT_SUPERMAYORISTA*
 <div align="center"> 
   <img src="readme_img/SSIS_fact_3.png" width="800px" height="500px">
 </div>
 
+### FLUJO_TRANSACCIONES_TXT_FACT
+  
+ #### SOURCE_TRANSACCIONES_TXT_FACT
+    
+   <div align="center"> 
+     <img src="readme_img/SSIS_TXT_0.png" width="800px" height="500px">
+     <img src="readme_img/SSIS_TXT_1.png" width="800px" height="500px">
+   </div>
+
+ #### DATA_CONVERSION_METADATA (PRECIO_UNIT_CANTIDAD_NUMERO_PRODUCTO_NUMERO_VENDEDOR)
+ 
+ > Se hace la conversión de datos dentro de la caja Conversión de Datos
+   
+   |   Columna de entrada    |      Alias de salida     |     Tipo de datos    | Precisión |
+   |:-----------------------:|:------------------------:|:--------------------:|:---------:|
+   | PRECIO_UNIT             | Copia de PRECIO_UNIT     | flotante[DT_R4]      |           |
+   | CANTIDAD                | Copia de CANTIDAD        | numérico[DT_NUMERIC] | 18        |
+   | NUMERO_PRODUCTO         | Copia de NUERMO_PRODUCTO | numérico[DT_NUMERIC] | 18        |
+   | NUMERO_VENDEDOR         | Copia de NUMERO_VENDEDOR | numérico[DT_NUMERIC] | 18        |
+ 
+ #### ADD_COLUMN_CODIGO_VENTA
+   
+ ```sql
+ # Se crea la columna derivada
+ COPIA_NUMERO_VENTA = TIPO_DOCUMENTO + SUBSTRING(NUMERO_VENTA,FINDSTRING(NUMERO_VENTA,"0",1) + 1,10)
+ ```
+ #### DELETE_UNNECESSARY_COLUMNS
+ 
+ ```sql
+ # Se eliminan las columnas innecesarias, quedando solo la columna:
+ BANCO
+ TIPO_DOCUMENTO
+ FECHA_VENTA
+ Copia de PRECIO_UNIT
+ Copia de CANTIDAD
+ Copia de NUMERO_PRODUCTO
+ Copia de NUMERO_VENDEDOR
+ COPIA_NUMERO_VENTA
+ DNI
+ ```
+ 
+ #### MERGE_JOIN_DIM_VENTA
+ 
+ ```sql
+ --Combinación completa
+ --**Se relacionan por Copia de CODIGO_NUMERO_VENTA = VENTA_KEY**
+ --Se traen las siguientes columnas::
+ VENTA_KEY
+ BANCO (Columna del origen)
+ TIPO_DOCUMENTO (Columna del origen)
+ FECHA_VENTA (Columna del origen)
+ Copia de PRECIO_UNIT (Columna del origen)
+ Copia de CANTIDAD (Columna del origen)
+ Copia de NUMERO_PRODUCTO (Columna del origen)
+ Copia de NUMERO_VENDEDOR (Columna del origen)
+ DNI (Columna del origen)
+ ```
+ 
+ #### MERGE_JOIN_DIM_BANCO
+ 
+ ```sql
+ --Combinación completa
+ --**Se relacionan por Copia de BANCO = COD_BANCO**
+ --Se traen las siguientes columnas::
+ VENTA_KEY (Columna del origen)
+ BANCO_KEY 
+ TIPO_DOCUMENTO (Columna del origen)
+ FECHA_VENTA (Columna del origen)
+ Copia de PRECIO_UNIT (Columna del origen)
+ Copia de CANTIDAD (Columna del origen)
+ Copia de NUMERO_PRODUCTO (Columna del origen)
+ Copia de NUMERO_VENDEDOR (Columna del origen)
+ DNI (Columna del origen)
+ ```
+ 
+ #### MEGE_JOIN_DIM_DOCUMENTO
+ 
+ ```sql
+ --Combinación completa
+ --**Se relacionan por Copia de TIPO_DOCUMENTO = INDICADOR**
+ --Se traen las siguientes columnas::
+ VENTA_KEY (Columna del origen)
+ BANCO_KEY (Columna del origen)
+ FECHA_VENTA (Columna del origen)
+ Copia de PRECIO_UNIT (Columna del origen)
+ Copia de CANTIDAD (Columna del origen)
+ Copia de NUMERO_PRODUCTO (Columna del origen)
+ Copia de NUMERO_VENDEDOR (Columna del origen)
+ DNI (Columna del origen)
+ DOCUMENTO_KEY
+ ```
+ 
+ #### ADD_COLUMNS (VENDEDOR_OFICIAL_PRODUCTO_OFICIAL)
+ 
+ ```sql
+ # Se crea las columnas derivadas
+ VENDEDOR_OFICIAL = (DT_I4)[Copia de NUMERO_VENDEDOR]
+ PRODUCTO_OFICIAL = (DT_I4)[Copia de NUMERO_PRODUCTO]
+ ```
+ 
+ #### DATA_CONVERSION_METADATA_DNI
+ 
+  > Se hace la conversión de datos dentro de la caja Conversión de Datos
+   
+   |   Columna de entrada    |      Alias de salida     |     Tipo de datos    | Longitud  |
+   |:-----------------------:|:------------------------:|:--------------------:|:---------:|
+   | DNI                     | Copia deDNI              | cadena[DT_STR]       | 14        |
+ 
+ #### MERGE_JOIN_DIM_PERIODO
+ 
+ ```sql
+ --Combinación completa
+ --**Se relacionan por Copia de FECHA_VENTA = COD_PERIODO**
+ --Se traen las siguientes columnas::
+ VENTA_KEY (Columna del origen)
+ BANCO_KEY (Columna del origen)
+ Copia de PRECIO_UNIT (Columna del origen)
+ Copia de CANTIDAD (Columna del origen)
+ DOCUMENTO_KEY (Columna del origen)
+ VENDEDOR_OFICIAL (Columna del origen)
+ PRODUCTO_OFICIAL (Columna del origen)
+ Copia de DNI (Columna del origen)
+ PERIODO_KEY
+ ```
+ 
+ #### MERGE_LEFT_JOIN (Cruce con SOURCE_FACT_SUPERMAYORISTA)
+ 
+ ```sql
+ --Combinación externa completa
+  
+  /*Se relacionan por:
+    - VENTA_KEY = FK_VENTA
+    - BANCO_KEY = FK_BANCO
+    - DOCUMENTO_KEY = FK_TIPO_DOCUMENTO
+    - VENDEDOR_OFICIAL = FK_VENDEDOR
+    - PRODUCTO_OFICIAL = FK_PRODUCTO
+    - Copia de DNI = FK_CLIENTE
+    - PERIODO_KEY = FK_PERIODO
+  */
+ --Se traen las siguientes columnas::
+ VENTA_KEY (Columna del origen)
+ Copia de DNI (Columna del origen)
+ VENDEDOR_OFICIAL (Columna del origen)
+ BANCO_KEY (Columna del origen)
+ PRODUCTO_OFICIAL (Columna del origen)
+ PERIODO_KEY (Columna del origen)
+ DOCUMENTO_KEY (Columna del origen)
+ Copia de CANTIDAD (Columna del origen)
+ Copia de PRECIO_UNIT (Columna del origen)
+ FK_VENTA
+ FK_CLIENTE
+ FK_VENDEDOR
+ FK_BANCO
+ FK_PRODUCTO
+ FK_PERIODO
+ FK_TIPO_DOCUMENTO 
+ ```
+ 
 <div align="center"> 
   <img src="readme_img/SSIS_fact_4.png" width="800px" height="500px">
 </div>
-
-
-
-
 
 ## Planificación del proyecto
 
