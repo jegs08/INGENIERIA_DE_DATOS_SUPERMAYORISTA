@@ -489,6 +489,10 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 
 ## BUCLE_TXT_VENTA
 
+<div align="center"> 
+  <img src="readme_img/SSIS_fact_2.png" width="800px" height="500px">
+</div>
+
   ### FLUJO_TRANSACCIONES_TXT_VENTAS_&_PERIODO
   
    #### SOURCE_TRANSACCIONES_TXT
@@ -498,12 +502,24 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
      <img src="readme_img/SSIS_TXT_1.png" width="800px" height="500px">
    </div>
   
-<div align="center"> 
-  <img src="readme_img/SSIS_fact_2.png" width="800px" height="500px">
-</div>
+   #### DATA_CONVERSION_METADATA (PRECIO_UNIT_ANTIDAD_NUMERO_PRODUCTO_NUMERO_VENDEDOR)
+   
+   > Se hace la conversión de datos dentro de la caja Conversión de Datos
+   
+   |   Columna de entrada    |      Alias de salida     |     Tipo de datos    | Precisión |
+   |:-----------------------:|:------------------------:|:--------------------:|:---------:|
+   | PRECIO_UNIT             | Copia de PRECIO_UNIT     | flotante[DT_R4]      |           |
+   | CANTIDAD                | Copia de CANTIDAD        | numérico[DT_NUMERIC] | 18        |
+   | NUMERO_PRODUCTO         | Copia de NUERMO_PRODUCTO | numérico[DT_NUMERIC] | 18        |
+   | NUMERO_VENDEDOR         | Copia de NUMERO_VENDEDOR | numérico[DT_NUMERIC] | 18        |
+
+   
 
 <div align="center"> 
   <img src="readme_img/SSIS_fact_3.png" width="800px" height="500px">
+</div>
+
+<div align="center"> 
   <img src="readme_img/SSIS_fact_4.png" width="800px" height="500px">
 </div>
 
