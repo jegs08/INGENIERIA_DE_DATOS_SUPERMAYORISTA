@@ -491,11 +491,12 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 
   ### FLUJO_TRANSACCIONES_TXT_VENTAS_&_PERIODO
   
-    #### SOURCE_TRANSACCIONES_TXT
+   #### SOURCE_TRANSACCIONES_TXT
     
-    <div align="center"> 
-      <img src="readme_img/SSIS_TXT.png" width="800px" height="500px">
-    </div>
+   <div align="center"> 
+     <img src="readme_img/SSIS_TXT_0.png" width="800px" height="500px">
+     <img src="readme_img/SSIS_TXT_1.png" width="800px" height="500px">
+   </div>
   
 <div align="center"> 
   <img src="readme_img/SSIS_fact_2.png" width="800px" height="500px">
