@@ -43,7 +43,7 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 
 # ETL **_Supermayorista_**
 
->*IMPORTANTE: Para poder tener acceso a este proyecto, revisar el archivo DM_SUPERMAYORISTA.sln*
+>*IMPORTANTE: Para poder tener acceso a este proyecto, revisar el archivo DM_SUPERMAYORISTA.sln dentro de la carpeta "DM_SPUERMAYORISTA_SSIS"*
 
 <div align="center"> 
   <img src="readme_img/SSIS_0.png" width="800px" height="500px">
