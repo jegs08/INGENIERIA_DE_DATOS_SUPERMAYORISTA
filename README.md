@@ -19,7 +19,7 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 - Extraer información de la base de datos de la empresa.
 
 ## Tabla de contenido
-- [ETL "Supermayorista"](#ETL-Supermayorista-(Archivo DM_SUPERMAYORISTA.sln))
+- [ETL "Supermayorista"](#ETL-Supermayorista)
 - [Planificación del proyecto](#Planificación-del-proyecto)
   - [Alcance del negocio](#Alcance-del-negocio)
 - [Definición de requerimientos para la empresa SUPERMAYORISTA](#Definición-de-requerimientos-para-la-empresa-SUPERMAYORISTA)
@@ -41,7 +41,9 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 - [Diseño físico](#Diseño-físico)
   - [Tablas del modelo dimensional](#Tablas-del-modelo-dimensional)
 
-# ETL **_Supermayorista_** (Archivo DM_SUPERMAYORISTA.sln)
+# ETL **_Supermayorista_**
+
+>*IMPORTANTE: Para poder tener acceso a este proyecto, revisar el archivo DM_SUPERMAYORISTA.sln*
 
 <div align="center"> 
   <img src="readme_img/SSIS_0.png" width="800px" height="500px">
