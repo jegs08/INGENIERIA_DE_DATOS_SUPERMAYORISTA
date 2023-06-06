@@ -51,7 +51,7 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
   
   ```python
   SELECT cod_tipo_documento,nombre_tipo_documento,SUBSTRING(nombre_tipo_documento,CHARINDEX(' ',nombre_tipo_documento)+1,1) AS INDICADOR
-  FROM TIPO_DOCUMENTO
+FROM TIPO_DOCUMENTO
   ```
 
   <img src="readme_img/SSIS_documento.png" width="800px" height="500px">
