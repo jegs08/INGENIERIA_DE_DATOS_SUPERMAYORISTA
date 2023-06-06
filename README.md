@@ -10,6 +10,12 @@
 
 El contenido de este documento son **apuntes teoricos y prácticos** y un proyecto **ETL** de una tienda llamada **"SUPERMAYORISTA"** y busca ser una guía para futuros trabajos personales. El mismo está hecho por mi persona [José Eduardo Galván Salvador](https://www.linkedin.com/in/eduardo-galvan1208/) para el grupo de estudio [Data Growth Community](https://www.linkedin.com/company/datagrowthcommunity/).
 
+# Herramientas 
+
+- **SQL Server 2017**
+- **SSDT 2017 - SQL Server Data Tools**
+- **Visual Studio 2017**
+
 # Objetivos del documento
 
 - Generar información precisa y oportuna para los usuarios finales de formal y que sea representativa para su uso en el proceso de toma decisiones.
