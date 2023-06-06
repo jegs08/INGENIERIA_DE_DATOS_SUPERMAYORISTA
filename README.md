@@ -806,7 +806,8 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 
 ### Alcance del negocio
 
-El presente proyecto busca ayudar con la gestión del área de ventas de la empresa SuperMayorista mediante informes de análisis de la información completos, veraces y en tiempo real que permita apoyar en la toma de decisiones.
+- El presente proyecto busca ayudar con la gestión del área de ventas de la empresa SuperMayorista mediante informes de análisis de la información completos, veraces y en tiempo real que permita apoyar en la toma de decisiones.
+- **_SE ESTÁ TRABAJANDO CON UN MODELO COPO DE NIEVE_**, es recomendable siempre tirar para un **_MODELO ESTRELLA_**, pero ello va a depender de la empresa en la que esté trabajando sea pequeña, mediana o grande.
 
 ## Definición de requerimientos para la empresa SUPERMAYORISTA
 
