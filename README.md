@@ -44,36 +44,470 @@ El contenido de este documento son **apuntes teoricos y prácticos** y un proyec
 
 <div align="center"> 
   <img src="readme_img/SSIS_0.png" width="800px" height="500px">
-  
-  ## FLUJO_DIM_DOCUMENTO
+</div>
+
+## FLUJO_DIM_DOCUMENTO
   
   ### SOURCE_DOCUMENTO
   
   ```sql
-  SELECT cod_tipo_documento,nombre_tipo_documento,
-         SUBSTRING(nombre_tipo_documento,CHARINDEX(' ',nombre_tipo_documento)+1,1) AS INDICADOR
+  SELECT cod_tipo_documento,nombre_tipo_documento, SUBSTRING(nombre_tipo_documento,CHARINDEX(' ',nombre_tipo_documento)+1,1) AS INDICADOR
   FROM TIPO_DOCUMENTO
   ```
-
   
+  ### MERGE_LEFT_JOIN
   
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por cod_tipo_documento = COD_TIPO_DOCUMENTO**
+  --Se traen las siguientes columnas::
+    cod_tipo_documento (Columna del origen) 
+    nombre_tipo_documento (Columna del origen)
+    COD_TIPO_DOCUMENTO (Columna del destino)
+    INDICADOR (Columna del origen)
+  ```
+   
+  ### SPLIT_COD_TIPO_DOCUMENTO_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(COD_TIPO_DOCUMENTO)
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_documento.png" width="800px" height="500px">
+</div>
+## FLUJO_DIM_VENDEDOR
+
+  ### SOURCE_VENDEDOR
+  
+  ```sql
+  SELECT V.ID,V.COD_VENDEDOR, CONCAT(V.apellido_vendedor,', ',V.NOMBRE_VENDEDOR) AS NOMBRE_COMPLETO, S.ID AS SUPERVISOR
+  FROM VENDEDOR_PRUEBA V
+  FULL OUTER JOIN VENDEDOR_PRUEBA S ON V.SUPERVISOR=S.COD_VENDEDOR
+  WHERE V.ID IS NOT NULL AND V.NOMBRE_VENDEDOR IS NOT NULL
+  ```
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por COD_VENDEDOR = COD_VENDEDOR**
+  --Se traen las siguientes columnas::
+    COD_VENDEDOR (Columna del origen) 
+    NOMBRE_COMPLETO (Columna del origen)
+    SUPERVISOR (Columna del origen) 
+    COD_VENDEDOR (Columna del destino) >> COD_VENDEDOR_DIM
+    ID (Columna del origen)
+  ```
+   
+  ### SPLIT_COD_VENDEDOR_DIM_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(COD_VENDEDOR_DIM)
+  ```
+  
+  ### SCRIPT_SUPERVISOR_REPLACE_ID
+  
+  > *Este script reemplaza el SUPERVISOR por su ID de vendedor*
+  
+  ```c#
+  public override void Entrada0_ProcessInputRow(Entrada0Buffer Row)
+    {
+        if (Row.SUPERVISOR_IsNull)
+        {
+            Row.SUPERVISOR = Row.ID;
+        }
+    }
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_vendedor.png" width="800px" height="500px">
+</div>
+
+## FLUJO_DIM_VENTA
+
+  ### SOURCE_VENTA
+  
+  ```sql
+  SELECT cod_documento AS COD_VENTA, estado
+  FROM VENTA
+  ```
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por COD_VENTA = COD_VENTA**
+  --Se traen las siguientes columnas::
+    COD_VENTA (Columna del origen) 
+    estado (Columna del origen)
+    COD_VENTA (Columna del destino) >> COD_VENTA_DIM
+  ```
+   
+  ### SPLIT_COD_VENTA_DIM_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL([COD_VENTA _DIM])
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_venta.png" width="800px" height="500px">
+</div>
+
+## FLUJO_DIM_BANCO
+
+  ### SOURCE_BANCO
+  
+  ```sql
+  SELECT *
+  FROM BANCO
+  ```
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por cod_banco = COD_BANCO**
+  --Se traen las siguientes columnas::
+    cod_banco (Columna del origen) 
+    nombre_banco (Columna del origen)
+    comision (Columna del origen)
+    COD_BANCO (Columna del destino)
+  ```
+   
+  ### SPLIT_COD_BANCO_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(COD_BANCO)
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_banco.png" width="800px" height="500px">
+</div>
+
+ ## FLUJO_DIM_PERIODO
+
+  ### SOURCE_PERIODO
+  
+  ```sql
+  SELECT DISTINCT CONCAT(CAST(YEAR(fecha_venta)as varchar(4)),
+  CAST(RIGHT('0'+ RTRIM(MONTH(fecha_venta)),2)as varchar(2)),CAST(RIGHT('0'+ RTRIM(DAY(fecha_venta)),2)as varchar(2))) as codigo,YEAR(fecha_venta) AS ANIO,
+  MONTH(fecha_venta) AS MES,DAY(fecha_venta) AS DIA
+  FROM VENTA
+  ```
+  
+  ### DERIVED_COLUMN_FECHA_OFICIAL
+  
+  ```sql
+  --Se crea la columna derivada dentro de la caja de Columna Derivada
+  FECHA_OFICIAL = (DT_DBDATE)(SUBSTRING(codigo,1,4) + "/" + SUBSTRING(codigo,5,2) + "/" + SUBSTRING(codigo,7,2))
+  ```
+  
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por codigo = COD_PERIODO**
+  --Se traen las siguientes columnas::
+    codigo (Columna del origen) 
+    FECHA_OFICIAL
+    ANIO (Columna del origen)
+    MES (Columna del origen)
+    DIA (Columna del origen)
+    COD_PERIODO (Columna del destino)
+  ```
+   
+  ### SPLIT_COD_PERIODO_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(COD_PERIODO)
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_periodo.png" width="800px" height="500px">
+</div>
+
+ ## FLUJO_DIM_CATEGORIA
+
+  ### SOURCE_CATEGORIA
+  
+  ```sql
+  SELECT DISTINCT categoria_producto
+  FROM PRODUCTO
+  ```
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por categoria_producto = DESCRIPCION**
+  --Se traen las siguientes columnas::
+    categoria_producto (Columna del origen) 
+    DESCRIPCION (Columna del destino)
+  ```
+   
+  ### SPLIT_DESCRIPCION_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(DESCRIPCION)
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_categoria.png" width="800px" height="500px">
+</div>
+
+## FLUJO_DIM_SUBCATEGORIA
+
+  ### SOURCE_SUBCATEGORIA
+  
+  ```sql
+  SELECT DISTINCT P.subcategoria_producto,C.CATEGORIA_KEY AS FK_CATEGORIA_S
+  FROM PRODUCTO P
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_CATEGORIA C ON C.DESCRIPCION = P.categoria_producto
+  ```
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por subcategoria_producto = DESCRIPCION**
+  --Se traen las siguientes columnas::
+    subcategoria_producto (Columna del origen)
+    FK_CATEGORIA_S (Columna del origen)
+    DESCRIPCION (Columna del destino)
+  ```
+   
+  ### SPLIT_DESCRIPCION_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(DESCRIPCION)
+  ```
+<div align="center"> 
   <img src="readme_img/SSIS_subcategoria.png" width="800px" height="500px">
+</div>
+
+## FLUJO_DIM_PRODUCTO
+
+  ### SOURCE_PRODUCTO
+  
+  ```sql
+  SELECT DISTINCT P.cod_producto, P.nombre_producto, S.SUBCATEGORIA_KEY AS FK_SUBCATEGORIA_P
+  FROM PRODUCTO P
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_SUBCATEGORIA S ON S.DESCRIPCION = P.subcategoria_producto
+  ORDER BY P.cod_producto
+  ```
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por cod_producto = FK_SUBCATEGORIA**
+  --Se traen las siguientes columnas::
+    cod_producto (Columna del origen)
+    nombre_producto (Columna del origen)
+    FK_SUBCATEGORIA_P (Columna del origen)
+    FK_SUBCATEGORIA (Columna del destino)
+  ```
+   
+  ### SPLIT_FK_SUBCATEGORIA_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(FK_SUBCATEGORIA)
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_producto.png" width="800px" height="500px">
+</div>
+
+## FLUJO_DIM_DEPARTAMENTO
+
+  ### SOURCE_DEPARTAMENTO
+  
+  ```sql
+  SELECT DISTINCT departamento_cliente
+  FROM CLIENTE
+  ```
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por departamento_cliente = NOMBRE_DEPARTAMENTO**
+  --Se traen las siguientes columnas::
+    departamento_cliente (Columna del origen)
+    NOMBRE_DEPARTAMENTO (Columna del destino)
+  ```
+   
+  ### SPLIT_NOMBRE_DEPARTAMENTO_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(NOMBRE_DEPARTAMENTO)
+  ```
+<div align="center"> 
   <img src="readme_img/SSIS_departamento.png" width="800px" height="500px">
+</div>
+
+## FLUJO_DIM_DISTRITO
+
+  ### SOURCE_DISTRITO
+  
+  ```sql
+  SELECT DISTINCT L.distrito_cliente,L.ubigeo_cliente,L.punto_geografico,E.DEPARTAMENTO_KEY AS FK_DEPARTAMENTO_D
+  FROM CLIENTE L
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_DEPARTAMENTO E ON E.NOMBRE_DEPARTAMENTO = L.departamento_cliente
+  ORDER BY L.distrito_cliente,E.DEPARTAMENTO_KEY
+  ```
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por distrito_cliente = NOMBRE_DISTRITO**
+  --Se traen las siguientes columnas::
+    distrito_cliente (Columna del origen)
+    ubigeo_cliente (Columna del origen)
+    punto_geografico (Columna del origen)
+    FK_DEPARTAMENTO_D (Columna del origen)
+    NOMBRE_DISTRITO (Columna del destino)
+  ```
+   
+  ### SPLIT_NOMBRE_DISTRITO_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(NOMBRE_DISTRITO)
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_distrito.png" width="800px" height="500px">
+</div>
+
+## FLUJO_DIM_CLIENTE
+
+  ### SOURCE_CLIENTE
+  
+  ```sql
+  SELECT DISTINCT CL.dni_cliente,UB.DISTRITO_KEY AS FK_DISTRITO_C,DT.DEPARTAMENTO_KEY AS FK_DEPARTAMENTO_C
+  FROM CLIENTE CL
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_DISTRITO UB ON UB.UBIGEO=CL.ubigeo_cliente
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_DEPARTAMENTO DT ON DT.NOMBRE_DEPARTAMENTO=CL.departamento_cliente
+  ```
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  --**Se relacionan por dni_cliente = DNI_CLIENTE**
+  --Se traen las siguientes columnas::
+    dni_cliente (Columna del origen)
+    FK_DISTRITO_C (Columna del origen)
+    DNI_CLIENTE (Columna del destino)
+  ```
+   
+  ### SPLIT_DNI_CLIENTE_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(DNI_CLIENTE)
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_cliente.png" width="800px" height="500px">
+</div>
+
+## CORRECCION_ORTOGRAFICA
+
+  ```sql
+  UPDATE VENTA_PRUEBA
+  SET VENDEDOR = REPLACE(vendedor,'Ã‘','Ñ')
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_correccion.png" width="800px" height="500px">
+</div>
+
+## FLUJO_FACT_SUPERMAYORISTA
+
+  ### SOURCE_CLIENTE
+  
+  ```sql
+  SELECT DISTINCT X1.VENTA_KEY AS FK_VENTA_F,X2.DNI_CLIENTE AS FK_CLIENTE_F,X3.VENDEDOR_KEY AS FK_VENDEDOR_F,7 AS FK_BANCO_F,
+				X4.PRODUCTO_KEY AS FK_PRODUCTO_F,X5.PERIODO_KEY AS FK_PERIODO_F,X6.DOCUMENTO_KEY AS FK_DOCUMENTO_F,
+				Y.cantidad,Y.precio_unitario
+  FROM VENTA_PRUEBA X
+  JOIN DETALLE_VENTA Y ON Y.cod_documento=X.cod_documento
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_VENTA X1 ON X1.COD_VENTA=X.cod_documento
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_CLIENTE X2 ON X2.DNI_CLIENTE=X.dni_cliente
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_VENDEDOR X3 ON X3.NOMBRE_VENDEDOR=X.vendedor
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_PRODUCTO X4 ON X4.COD_PRODUCTO=Y.cod_producto
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_PERIODO X5 ON X5.COD_PERIODO=CONCAT(CAST(YEAR(X.fecha_venta)as varchar(4)),CAST(RIGHT('0'+ RTRIM(MONTH(X.fecha_venta)),2)as varchar(2)),CAST(RIGHT('0'+ RTRIM(DAY(X.fecha_venta)),2)as   varchar(2)))
+  JOIN DM_SUPERMAYORISTA.DBO.DIM_DOCUMENTO X6 ON X6.TIPO_DOCUMENTO=X.nombre_tipo_documento
+  ORDER BY X3.VENDEDOR_KEY
+  ```
+  ### MERGE_LEFT_JOIN
+  
+  ```sql
+  --Combinación externa completa
+  
+  /*Se relacionan por:
+    - FK_VENTA_F = FK_VENTA
+    - FK_CLIENTE_F = FK_CLIENTE
+    - FK_VENDEDOR_F = FK_VENDEDOR
+    - FK_PRODUCTO_F = FK_PRODUCTO
+    - FK_PERIODO_F = FK_PERIODO
+    - FK_DOCUMENTO_F = FK_TIPO_DOCUMENTO
+  */
+  --Se traen las siguientes columnas::
+    FK_VENTA_F (Columna del origen)
+    FK_CLIENTE_F (Columna del origen)
+    FK_VENDEDOR_F (Columna del origen)
+    FK_PRODUCTO_F (Columna del origen)
+    FK_PERIODO_F (Columna del origen)
+    FK_DOCUMENTO_F (Columna del origen)
+    cantidad (Columna del origen)
+    precio_unitario (Columna del origen)
+    FK_VENTA (Columna del destino)
+    FK_CLIENTE (Columna del destino)
+    FK_VENDEDOR (Columna del destino)
+    FK_PRODUCTO (Columna del destino)
+    FK_PERIODO (Columna del destino)
+    FK_TIPO_DOCUMENTO (Columna del destino)
+    FK_BANCO (Columna del destino)
+    FK_BANCO_F (Columna del origen)
+  ```
+   
+  ### SPLIT_(FK_VENTA_FK_CLIENTE_FK_VENDEDOR_FK_BANCO_FK_PRODUCTO_FK_PERIODO_FK_TIPO_DOCUMENTO)_ISNULL
+  
+  ```sql
+  --Se crea la condición dentro de la caja de División Condicional
+  INSERT_UPDATE = ISNULL(FK_VENTA) && ISNULL(FK_CLIENTE) && ISNULL(FK_VENDEDOR) && ISNULL(FK_BANCO) && ISNULL(FK_PRODUCTO) && ISNULL(FK_PERIODO) && ISNULL(FK_TIPO_DOCUMENTO)
+  ```
+  
+<div align="center"> 
   <img src="readme_img/SSIS_fact_1.png" width="800px" height="500px">
+</div>
+
+## BUCLE_TXT_VENTA
+
+  ### FLUJO_TRANSACCIONES_TXT_VENTAS_&_PERIODO
+  
+    #### SOURCE_TRANSACCIONES_TXT
+    
+    <div align="center"> 
+      <img src="readme_img/SSIS_TXT.png" width="800px" height="500px">
+    </div>
+  
+<div align="center"> 
   <img src="readme_img/SSIS_fact_2.png" width="800px" height="500px">
+</div>
+
+<div align="center"> 
   <img src="readme_img/SSIS_fact_3.png" width="800px" height="500px">
   <img src="readme_img/SSIS_fact_4.png" width="800px" height="500px">
 </div>
+
+
+
 
 
 ## Planificación del proyecto
